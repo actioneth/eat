@@ -1,0 +1,633 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Здоровое питание - Гид</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+        .container {
+            max-width: 400px;
+            margin: 0 auto;
+            background: white;
+            min-height: 100vh;
+            box-shadow: 0 0 20px rgba(0,0,0,0.1);
+        }
+        .header {
+            background: linear-gradient(135deg, #4CAF50, #45a049);
+            color: white;
+            padding: 20px;
+            text-align: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        .header h1 {
+            font-size: 24px;
+            margin-bottom: 5px;
+        }
+        .header p {
+            opacity: 0.9;
+            font-size: 14px;
+        }
+        .tabs {
+            display: flex;
+            background: #f8f9fa;
+            border-bottom: 1px solid #e9ecef;
+            position: sticky;
+            top: 80px;
+            z-index: 99;
+            background: white;
+        }
+        .tab {
+            flex: 1;
+            padding: 12px 8px;
+            text-align: center;
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 11px;
+            color: #6c757d;
+            transition: all 0.3s;
+            font-family: inherit;
+        }
+        .tab:hover {
+            background-color: #f8f9fa;
+        }
+        .tab.active {
+            background: white;
+            color: #4CAF50;
+            border-bottom: 2px solid #4CAF50;
+        }
+        .content {
+            padding: 20px;
+            padding-bottom: 100px;
+        }
+        .section {
+            display: none;
+            animation: fadeIn 0.3s ease-in;
+        }
+        .section.active {
+            display: block;
+        }
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        .card {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 15px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            transition: transform 0.2s ease;
+        }
+        .card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+        .card h3 {
+            color: #2c3e50;
+            margin-bottom: 15px;
+            font-size: 18px;
+        }
+        .good-list {
+            background: #f8fff8;
+            border-left: 4px solid #4CAF50;
+        }
+        .bad-list {
+            background: #fff8f8;
+            border-left: 4px solid #f44336;
+        }
+        .warning {
+            background: #fff9f0;
+            border-left: 4px solid #ff9800;
+        }
+        .food-item {
+            padding: 8px 0;
+            border-bottom: 1px solid #eee;
+            font-size: 14px;
+            line-height: 1.5;
+        }
+        .food-item:last-child {
+            border-bottom: none;
+        }
+        .food-item.good {
+            color: #2e7d32;
+        }
+        .food-item.good::before {
+            content: "✅ ";
+        }
+        .food-item.bad {
+            color: #c62828;
+        }
+        .food-item.bad::before {
+            content: "❌ ";
+        }
+        .portion {
+            color: #666;
+            font-size: 12px;
+            font-style: italic;
+        }
+        .rule {
+            padding: 10px;
+            margin: 5px 0;
+            background: #e3f2fd;
+            border-radius: 8px;
+            font-size: 14px;
+            border-left: 3px solid #2196f3;
+            line-height: 1.5;
+        }
+        .checklist-item {
+            display: flex;
+            align-items: center;
+            padding: 12px;
+            margin: 8px 0;
+            background: #f9f9f9;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+            border: 2px solid transparent;
+            user-select: none;
+        }
+        .checklist-item:hover {
+            background: #f0f0f0;
+            transform: translateX(2px);
+        }
+        .checklist-item.checked {
+            background: #e8f5e8;
+            border-color: #4CAF50;
+        }
+        .checklist-item.checked .task-text {
+            text-decoration: line-through;
+            color: #666;
+        }
+        .checkbox {
+            width: 20px;
+            height: 20px;
+            border: 2px solid #ddd;
+            border-radius: 4px;
+            margin-right: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            transition: all 0.3s;
+        }
+        .checklist-item.checked .checkbox {
+            background: #4CAF50;
+            border-color: #4CAF50;
+            color: white;
+        }
+        .task-text {
+            flex: 1;
+            font-size: 14px;
+        }
+        .progress {
+            margin: 20px 0;
+            text-align: center;
+        }
+        .progress-text {
+            margin-bottom: 10px;
+            font-weight: bold;
+            color: #2c3e50;
+        }
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: #e0e0e0;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #4CAF50, #45a049);
+            transition: width 0.3s ease;
+        }
+        .reset-btn {
+            background: #ff9800;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            margin-top: 15px;
+            transition: background 0.3s;
+            font-family: inherit;
+        }
+        .reset-btn:hover {
+            background: #f57c00;
+            transform: translateY(-1px);
+        }
+        .reset-btn:active {
+            transform: translateY(0);
+        }
+        .emergency {
+            background: #ffebee;
+            border: 2px solid #f44336;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 15px 0;
+        }
+        .emergency h4 {
+            color: #c62828;
+            margin-bottom: 10px;
+        }
+        .emergency-steps {
+            list-style: none;
+        }
+        .emergency-steps li {
+            padding: 5px 0;
+            font-size: 14px;
+            line-height: 1.5;
+        }
+        .emergency-steps li::before {
+            content: "🚨 ";
+        }
+        @media (max-width: 480px) {
+            .container {
+                max-width: 100%;
+            }
+            .content {
+                padding: 15px;
+            }
+            .tab {
+                font-size: 10px;
+                padding: 10px 6px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🥗 Здоровое питание</h1>
+            <p>Ваш персональный гид по правильному выбору еды</p>
+        </div>
+
+        <div class="tabs">
+            <button class="tab active" data-tab="home">Главная</button>
+            <button class="tab" data-tab="delivery">Доставка</button>
+            <button class="tab" data-tab="canteen">Столовая</button>
+            <button class="tab" data-tab="snacks">Перекусы</button>
+            <button class="tab" data-tab="checklist">Чек-лист</button>
+        </div>
+
+        <div class="content">
+            <div id="home" class="section active">
+                <div class="card good-list">
+                    <h3>🎯 Главные правила</h3>
+                    <div class="rule">Доставка: ищите "гриль", "запеченное", "тушеное"</div>
+                    <div class="rule">Столовая: 50% овощи + 25% белок + 25% углеводы</div>
+                    <div class="rule">Магазин: только 3 отдела - молочка, фрукты, орехи</div>
+                </div>
+
+                <div class="emergency">
+                    <h4>⚠️ Экстренная помощь</h4>
+                    <p style="margin-bottom: 10px;"><strong>Если ОЧЕНЬ хочется сладкого:</strong></p>
+                    <ul class="emergency-steps">
+                        <li>СТОП - остановитесь прямо сейчас</li>
+                        <li>Идите к фруктам - возьмите банан</li>
+                        <li>Или к орехам - небольшая упаковка</li>
+                        <li>Выпейте стакан воды. </li>
+                    </ul>
+                </div>
+            </div>
+
+            <div id="delivery" class="section">
+                <div class="card good-list">
+                    <h3>✅ Что заказывать</h3>
+                    <div class="food-item good">Гречка с курицей</div>
+                    <div class="food-item good">Рис с рыбой (запеченной)</div>
+                    <div class="food-item good">Салат Цезарь с курицей (без сухариков)</div>
+                    <div class="food-item good">Боул с киноа и овощами</div>
+                    <div class="food-item good">Суп + мясо с гарниром</div>
+                    <div class="food-item good">Курица гриль</div>
+                    <div class="food-item good">Рыба запеченная, на пару</div>
+                    <div class="food-item good">Овощи на гриле</div>
+                </div>
+
+                <div class="card bad-list">
+                    <h3>❌ Что НЕ заказывать</h3>
+                    <div class="food-item bad">Пицца, бургеры, шаурма</div>
+                    <div class="food-item bad">Жареная картошка, фри</div>
+                    <div class="food-item bad">Роллы и суши (много риса)</div>
+                    <div class="food-item bad">Паста в сливочных соусах</div>
+                    <div class="food-item bad">Плов, манты, пельмени</div>
+                    <div class="food-item bad">Сладкая выпечка</div>
+                </div>
+
+                <div class="card warning">
+                    <h3>📱 Алгоритм заказа</h3>
+                    <div class="rule">1. Ищите категории "здоровое питание", "фитнес"</div>
+                    <div class="rule">2. Выбирайте "салаты", "гриль", "здоровое питание"</div>
+                    <div class="rule">3. Читайте состав: овощи + белок + сложный углевод</div>
+                    <div class="rule">4. Заказывайте без соусов или соусы отдельно</div>
+                </div>
+            </div>
+
+            <div id="canteen" class="section">
+                <div class="card good-list">
+                    <h3>🍽️ Правило тарелки</h3>
+                    <div class="rule"><strong>50% овощи</strong> - салаты, тушеные овощи</div>
+                    <div class="rule"><strong>25% белок</strong> - курица, рыба, мясо (не жареные)</div>
+                    <div class="rule"><strong>25% углеводы</strong> - гречка, рис, тушеные овощи</div>
+                </div>
+
+                <div class="card">
+                    <h3>📋 Что брать</h3>
+                    <div class="food-item good">Супы: борщ, щи, солянка (без сметаны)</div>
+                    <div class="food-item good">Мясо: вареное, тушеное, запеченное</div>
+                    <div class="food-item good">Гарниры: гречка, рис, тушеные овощи</div>
+                    <div class="food-item good">Салаты из свежих овощей</div>
+                </div>
+
+                <div class="card bad-list">
+                    <h3>❌ Что НЕ брать</h3>
+                    <div class="food-item bad">Жареное мясо в кляре</div>
+                    <div class="food-item bad">Картофель жареный, пюре на молоке</div>
+                    <div class="food-item bad">Макароны с жирными соусами</div>
+                    <div class="food-item bad">Сладкие десерты</div>
+                </div>
+
+                <div class="card warning">
+                    <h3>🎯 Стратегия</h3>
+                    <div class="rule">1. Сначала салат - наполните тарелку овощами</div>
+                    <div class="rule">2. Потом белок - курица, рыба, мясо</div>
+                    <div class="rule">3. В конце углеводы - небольшая порция гарнира</div>
+                    <div class="rule">4. Соусы минимально или отдельно</div>
+                </div>
+            </div>
+
+            <div id="snacks" class="section">
+                <div class="card good-list">
+                    <h3>✅ Правильные перекусы</h3>
+                    <div class="food-item good">Орехи  <span class="portion">(30г - горсть)</span></div>
+                    <div class="food-item good">Миндаль <span class="portion">(20-25 штук)</span></div>
+                    <div class="food-item good">Яблоки <span class="portion">(1-2 шт)</span></div>
+                    <div class="food-item good">Бананы <span class="portion">(1-2 в день)</span></div>
+                    <div class="food-item good">Кефир 1% <span class="portion">(200мл)</span></div>
+                    <div class="food-item good">Творог 5% <span class="portion">(100г)</span></div>
+                    <div class="food-item good">Морковь <span class="portion">(без ограничений)</span></div>
+                    <div class="food-item good">Темный шоколад 70%+ <span class="portion">(2-3 дольки)</span></div>
+                </div>
+
+                <div class="card bad-list">
+                    <h3>❌ Что НЕ покупать</h3>
+                    <div class="food-item bad">Чипсы, сухарики, попкорн</div>
+                    <div class="food-item bad">Печенье, вафли, батончики</div>
+                    <div class="food-item bad">Конфеты, молочный шоколад</div>
+                    <div class="food-item bad">Сладкие йогурты, творожки</div>
+                    <div class="food-item bad">Колбаса, сосиски</div>
+                    <div class="food-item bad">Сладкие напитки, соки</div>
+                </div>
+
+                <div class="card warning">
+                    <h3>🛒 Стратегия в магазине</h3>
+                    <div class="rule"><strong>Только 3 отдела:</strong> молочные продукты, фрукты-овощи, орехи</div>
+                    <div class="rule">Заходите после еды - меньше соблазнов</div>
+                    <div class="rule">У кассы смотрите в телефон, не на сладости</div>
+                    <div class="rule">Покупайте на 2-3 дня, не накапливайте</div>
+                </div>
+
+                <div class="card">
+                    <h3>🥨 Готовые комбинации</h3>
+                    <div class="rule"><strong>Утром:</strong> Яблоко + 5 орехов</div>
+                    <div class="rule"><strong>Днем:</strong> Банан + горсть миндаля</div>
+                    <div class="rule"><strong>Вечером:</strong> Кефир или орехи</div>
+                </div>
+            </div>
+
+            <div id="checklist" class="section">
+                <div class="progress">
+                    <div class="progress-text">Прогресс дня: <span id="progress-text">0/6</span></div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="progress-fill" style="width: 0%"></div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h3>✅ Ежедневные задачи</h3>
+                    <div id="checklist-items"></div>
+                    <button class="reset-btn" id="reset-btn">🔄 Новый день</button>
+                </div>
+
+                <div class="card" style="text-align: center; margin-top: 20px;">
+                    <h3>🏆 Мотивация</h3>
+                    <div id="motivation-message">Начните выполнять задачи!</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Использование современного синтаксиса и улучшенная структура
+        const HealthApp = {
+            tasks: [
+                'Заказал здоровый завтрак',
+                'Купил правильные перекусы',
+                'Поел в столовой по правилам',
+                'Не покупал сладкое в магазине',
+                'Выпил достаточно воды',
+                'Прошел 15+ тысяч шагов'
+            ],
+            
+            checked: [],
+            
+            // Ключи для localStorage
+            STORAGE_KEYS: {
+                TASKS: 'healthapp_tasks',
+                DATE: 'healthapp_date'
+            },
+            
+            // Инициализация приложения
+            init() {
+                this.loadData();
+                this.render();
+                this.updateProgress();
+                this.setupEventListeners();
+            },
+            
+            // Настройка обработчиков событий
+            setupEventListeners() {
+                // Обработка переключения вкладок
+                document.querySelectorAll('.tab').forEach(tab => {
+                    tab.addEventListener('click', (e) => {
+                        const tabName = e.target.dataset.tab;
+                        this.showTab(tabName, e.target);
+                    });
+                });
+                
+                // Обработка кнопки сброса
+                const resetBtn = document.getElementById('reset-btn');
+                if (resetBtn) {
+                    resetBtn.addEventListener('click', () => this.resetChecklist());
+                }
+            },
+            
+            // Переключение вкладок
+            showTab(name, btnElement) {
+                // Скрыть все секции
+                document.querySelectorAll('.section').forEach(section => {
+                    section.classList.remove('active');
+                });
+                
+                // Убрать активный класс со всех вкладок
+                document.querySelectorAll('.tab').forEach(tab => {
+                    tab.classList.remove('active');
+                });
+                
+                // Показать выбранную секцию
+                const targetSection = document.getElementById(name);
+                if (targetSection) {
+                    targetSection.classList.add('active');
+                }
+                
+                // Добавить активный класс на выбранную вкладку
+                btnElement.classList.add('active');
+            },
+            
+            // Загрузка данных из localStorage
+            loadData() {
+                try {
+                    const savedTasks = localStorage.getItem(this.STORAGE_KEYS.TASKS);
+                    const savedDate = localStorage.getItem(this.STORAGE_KEYS.DATE);
+                    const today = new Date().toDateString();
+                    
+                    // Если данные есть и они за сегодня, загружаем их
+                    if (savedTasks && savedDate === today) {
+                        this.checked = JSON.parse(savedTasks);
+                    } else {
+                        // Иначе начинаем новый день
+                        this.checked = [];
+                        localStorage.setItem(this.STORAGE_KEYS.DATE, today);
+                    }
+                } catch (error) {
+                    console.error('Ошибка при загрузке данных:', error);
+                    this.checked = [];
+                }
+            },
+            
+            // Сохранение данных в localStorage
+            saveData() {
+                try {
+                    localStorage.setItem(this.STORAGE_KEYS.TASKS, JSON.stringify(this.checked));
+                    localStorage.setItem(this.STORAGE_KEYS.DATE, new Date().toDateString());
+                } catch (error) {
+                    console.error('Ошибка при сохранении данных:', error);
+                }
+            },
+            
+            // Отрисовка чек-листа
+            render() {
+                const container = document.getElementById('checklist-items');
+                if (!container) return;
+                
+                container.innerHTML = '';
+                
+                this.tasks.forEach((task, index) => {
+                    const isChecked = this.checked.includes(index);
+                    
+                    const item = document.createElement('div');
+                    item.className = `checklist-item${isChecked ? ' checked' : ''}`;
+                    item.addEventListener('click', () => this.toggleTask(index));
+                    
+                    const checkbox = document.createElement('div');
+                    checkbox.className = 'checkbox';
+                    checkbox.innerHTML = isChecked ? '✓' : '';
+                    
+                    const text = document.createElement('div');
+                    text.className = 'task-text';
+                    text.textContent = task;
+                    
+                    item.appendChild(checkbox);
+                    item.appendChild(text);
+                    container.appendChild(item);
+                });
+            },
+            
+            // Переключение состояния задачи
+            toggleTask(index) {
+                const position = this.checked.indexOf(index);
+                
+                if (position !== -1) {
+                    // Если задача выполнена, убираем её
+                    this.checked.splice(position, 1);
+                } else {
+                    // Если не выполнена, добавляем
+                    this.checked.push(index);
+                }
+                
+                this.saveData();
+                this.render();
+                this.updateProgress();
+            },
+            
+            // Обновление прогресса
+            updateProgress() {
+                const completed = this.checked.length;
+                const total = this.tasks.length;
+                const percentage = Math.round((completed / total) * 100);
+                
+                // Обновляем текст прогресса
+                const progressText = document.getElementById('progress-text');
+                if (progressText) {
+                    progressText.textContent = `${completed}/${total}`;
+                }
+                
+                // Обновляем полосу прогресса
+                const progressFill = document.getElementById('progress-fill');
+                if (progressFill) {
+                    progressFill.style.width = `${percentage}%`;
+                }
+                
+                // Обновляем мотивационное сообщение
+                const motivationMessage = document.getElementById('motivation-message');
+                if (motivationMessage) {
+                    if (completed === 0) {
+                        motivationMessage.textContent = '💪 Начните прямо сейчас!';
+                    } else if (completed < total / 2) {
+                        motivationMessage.textContent = '🔥 Отличное начало!';
+                    } else if (completed < total) {
+                        motivationMessage.textContent = '⭐ Почти готово!';
+                    } else {
+                        motivationMessage.textContent = '🎉 Идеальный день! Вы молодец!';
+                    }
+                }
+            },
+            
+            // Сброс чек-листа
+            resetChecklist() {
+                if (confirm('Начать новый день? Все текущие отметки будут сброшены.')) {
+                    this.checked = [];
+                    this.saveData();
+                    this.render();
+                    this.updateProgress();
+                }
+            }
+        };
+        
+        // Запуск приложения после загрузки DOM
+        document.addEventListener('DOMContentLoaded', () => {
+            HealthApp.init();
+        });
+    </script>
+</body>
+</html>
